@@ -146,15 +146,10 @@ Create an OAuth 2.0 Web client in Google Cloud Console. Add `<NEXT_PUBLIC_SITE_U
 ## Deploying to Vercel
 
 1. Push the repo to GitHub and import it in Vercel.
-2. Create a Neon database (Vercel Marketplace → Neon) or use Supabase. Set `DATABASE_URL` to the pooled URL and `DIRECT_URL` to the direct URL.
-3. Add the environment variables from `.env.example`. Set `NEXT_PUBLIC_SITE_URL` to your production URL.
-4. Set the **Build Command** to `npm run vercel-build`. This runs `prisma generate`, `prisma migrate deploy` and `next build`.
-5. Deploy, then seed once from your machine against the production database:
-
-   ```bash
-   DATABASE_URL="<production direct url>" npm run db:seed
-   ```
-
+2. Add a database. The easiest is the project's **Storage** tab → **Create Database** → **Neon**, which sets `DATABASE_URL` and `DATABASE_URL_UNPOOLED` for you. For Supabase, set `DATABASE_URL` to the pooled URL and `DIRECT_URL` to the direct URL.
+3. Add the environment variables from `.env.example`. Set `NEXT_PUBLIC_SITE_URL` to your production URL, and add `AUTH_SECRET` and `DOWNLOAD_TOKEN_SECRET`.
+4. Set the **Build Command** to `npm run vercel-build`. This runs `prisma generate`, `prisma migrate deploy`, seeds the demo store **only if the database is empty**, then runs `next build`. Set `SKIP_DEMO_SEED=true` to turn off the demo seed for a real store.
+5. Deploy.
 6. In Stripe → Developers → Webhooks, add the endpoint `https://<your-domain>/api/webhooks/stripe` with the four events listed above. Put its signing secret in `STRIPE_WEBHOOK_SECRET` and redeploy.
 7. Configure Cloudinary for uploads: Vercel's filesystem is read-only, so local uploads are disabled there. The seeded digital files ship with the deployment.
 
